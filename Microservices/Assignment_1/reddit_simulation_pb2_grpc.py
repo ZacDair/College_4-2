@@ -14,17 +14,17 @@ class DataStreamingServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.startDatastream = channel.unary_stream(
-                '/DataStreamingService/startDatastream',
-                request_serializer=reddit__simulation__pb2.Message.SerializeToString,
-                response_deserializer=reddit__simulation__pb2.Message.FromString,
+        self.StartDatastream = channel.unary_stream(
+                '/DataStreamingService/StartDatastream',
+                request_serializer=reddit__simulation__pb2.Request.SerializeToString,
+                response_deserializer=reddit__simulation__pb2.Response.FromString,
                 )
 
 
 class DataStreamingServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def startDatastream(self, request, context):
+    def StartDatastream(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -33,10 +33,10 @@ class DataStreamingServiceServicer(object):
 
 def add_DataStreamingServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'startDatastream': grpc.unary_stream_rpc_method_handler(
-                    servicer.startDatastream,
-                    request_deserializer=reddit__simulation__pb2.Message.FromString,
-                    response_serializer=reddit__simulation__pb2.Message.SerializeToString,
+            'StartDatastream': grpc.unary_stream_rpc_method_handler(
+                    servicer.StartDatastream,
+                    request_deserializer=reddit__simulation__pb2.Request.FromString,
+                    response_serializer=reddit__simulation__pb2.Response.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -49,7 +49,7 @@ class DataStreamingService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def startDatastream(request,
+    def StartDatastream(request,
             target,
             options=(),
             channel_credentials=None,
@@ -59,8 +59,8 @@ class DataStreamingService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/DataStreamingService/startDatastream',
-            reddit__simulation__pb2.Message.SerializeToString,
-            reddit__simulation__pb2.Message.FromString,
+        return grpc.experimental.unary_stream(request, target, '/DataStreamingService/StartDatastream',
+            reddit__simulation__pb2.Request.SerializeToString,
+            reddit__simulation__pb2.Response.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
