@@ -5,6 +5,9 @@ import grpc
 import reddit_simulation_pb2_grpc
 import reddit_simulation_pb2
 
+import random
+import time
+
 # Define Global Attributes (Server Address and ID)
 SERVER_ADDRESS = "localhost:23333"
 SERVER_ID = 1
@@ -33,10 +36,22 @@ class Server(reddit_simulation_pb2_grpc.DataStreamingServiceServicer):
         print("StartDatastream called by client(%d), message= %s" %
               (request.client_id, request.request_data))
 
+        # Function to retrieve and send the reddit post data to the client (between 1-5 posts every 2 seconds)
         def send_dataPosts():
+            
+            # Retrieve the whole dataset TODO: Look at only pulling the numToSend lines from the file
             data = getData("datasource/short.xls")
+            
+            # Define a number of posts to send every run and store a running count
+            numToSend = random.randint(1, 5)
+            postCount = 0
+
+            # Loop through every entry of the dataset sending each to the client
             for post in data:
+                postCount += 1
                 print("Sending Post:", str(post[0]))
+
+                # Create the DatasourcePost object and send it
                 response = reddit_simulation_pb2.DatasourcePost(
                     post_id = post[0],
                     title = post[1],
@@ -52,6 +67,13 @@ class Server(reddit_simulation_pb2_grpc.DataStreamingServiceServicer):
                     over_18 = bool(post[11])
                     )
                 yield response
+
+                # If we have sent the max posts per run - sleep and reset our dataflow control variables
+                if postCount == numToSend:
+                    postCount = 0
+                    numToSend = random.randint(1, 5)
+                    time.sleep(2)
+                
 
         return send_dataPosts()
 
