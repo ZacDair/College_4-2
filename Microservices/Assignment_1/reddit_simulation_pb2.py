@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x17reddit_simulation.proto\"2\n\x07Request\x12\x11\n\tclient_id\x18\x01 \x01(\x03\x12\x14\n\x0crequest_data\x18\x02 \x01(\t\"4\n\x08Response\x12\x11\n\tserver_id\x18\x01 \x01(\x03\x12\x15\n\rresponse_data\x18\x02 \x01(\t2@\n\x14\x44\x61taStreamingService\x12(\n\x0fStartDatastream\x12\x08.Request\x1a\t.Response0\x01\x62\x06proto3'
+  serialized_pb=b'\n\x17reddit_simulation.proto\"2\n\x07Request\x12\x11\n\tclient_id\x18\x01 \x01(\x03\x12\x14\n\x0crequest_data\x18\x02 \x01(\t\"\xf1\x01\n\x0e\x44\x61tasourcePost\x12\x0f\n\x07post_id\x18\x01 \x01(\t\x12\r\n\x05title\x18\x02 \x01(\t\x12\r\n\x05score\x18\x03 \x01(\x03\x12\x0e\n\x06\x61uthor\x18\x04 \x01(\t\x12\x14\n\x0c\x61uthor_flair\x18\x05 \x01(\t\x12\x12\n\nremoved_by\x18\x06 \x01(\t\x12\x14\n\x0ctotal_awards\x18\x07 \x01(\x03\x12\x10\n\x08\x61warders\x18\x08 \x01(\t\x12\x19\n\x11\x63reated_timestamp\x18\t \x01(\x03\x12\x0c\n\x04link\x18\n \x01(\t\x12\x14\n\x0cnum_comments\x18\x0b \x01(\x03\x12\x0f\n\x07over_18\x18\x0c \x01(\x08\x32\x46\n\x14\x44\x61taStreamingService\x12.\n\x0fStartDatastream\x12\x08.Request\x1a\x0f.DatasourcePost0\x01\x62\x06proto3'
 )
 
 
@@ -64,25 +64,95 @@ _REQUEST = _descriptor.Descriptor(
 )
 
 
-_RESPONSE = _descriptor.Descriptor(
-  name='Response',
-  full_name='Response',
+_DATASOURCEPOST = _descriptor.Descriptor(
+  name='DatasourcePost',
+  full_name='DatasourcePost',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='server_id', full_name='Response.server_id', index=0,
-      number=1, type=3, cpp_type=2, label=1,
+      name='post_id', full_name='DatasourcePost.post_id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='title', full_name='DatasourcePost.title', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='score', full_name='DatasourcePost.score', index=2,
+      number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='response_data', full_name='Response.response_data', index=1,
-      number=2, type=9, cpp_type=9, label=1,
+      name='author', full_name='DatasourcePost.author', index=3,
+      number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='author_flair', full_name='DatasourcePost.author_flair', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='removed_by', full_name='DatasourcePost.removed_by', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='total_awards', full_name='DatasourcePost.total_awards', index=6,
+      number=7, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='awarders', full_name='DatasourcePost.awarders', index=7,
+      number=8, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='created_timestamp', full_name='DatasourcePost.created_timestamp', index=8,
+      number=9, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='link', full_name='DatasourcePost.link', index=9,
+      number=10, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='num_comments', full_name='DatasourcePost.num_comments', index=10,
+      number=11, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='over_18', full_name='DatasourcePost.over_18', index=11,
+      number=12, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -98,12 +168,12 @@ _RESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=79,
-  serialized_end=131,
+  serialized_start=80,
+  serialized_end=321,
 )
 
 DESCRIPTOR.message_types_by_name['Request'] = _REQUEST
-DESCRIPTOR.message_types_by_name['Response'] = _RESPONSE
+DESCRIPTOR.message_types_by_name['DatasourcePost'] = _DATASOURCEPOST
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Request = _reflection.GeneratedProtocolMessageType('Request', (_message.Message,), {
@@ -113,12 +183,12 @@ Request = _reflection.GeneratedProtocolMessageType('Request', (_message.Message,
   })
 _sym_db.RegisterMessage(Request)
 
-Response = _reflection.GeneratedProtocolMessageType('Response', (_message.Message,), {
-  'DESCRIPTOR' : _RESPONSE,
+DatasourcePost = _reflection.GeneratedProtocolMessageType('DatasourcePost', (_message.Message,), {
+  'DESCRIPTOR' : _DATASOURCEPOST,
   '__module__' : 'reddit_simulation_pb2'
-  # @@protoc_insertion_point(class_scope:Response)
+  # @@protoc_insertion_point(class_scope:DatasourcePost)
   })
-_sym_db.RegisterMessage(Response)
+_sym_db.RegisterMessage(DatasourcePost)
 
 
 
@@ -129,8 +199,8 @@ _DATASTREAMINGSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=133,
-  serialized_end=197,
+  serialized_start=323,
+  serialized_end=393,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartDatastream',
@@ -138,7 +208,7 @@ _DATASTREAMINGSERVICE = _descriptor.ServiceDescriptor(
     index=0,
     containing_service=None,
     input_type=_REQUEST,
-    output_type=_RESPONSE,
+    output_type=_DATASOURCEPOST,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

@@ -6,7 +6,8 @@ import reddit_simulation_pb2 as reddit__simulation__pb2
 
 
 class DataStreamingServiceStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """Server Side Streaming allowing the client to send one message and the server to return numerous replies.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -17,12 +18,13 @@ class DataStreamingServiceStub(object):
         self.StartDatastream = channel.unary_stream(
                 '/DataStreamingService/StartDatastream',
                 request_serializer=reddit__simulation__pb2.Request.SerializeToString,
-                response_deserializer=reddit__simulation__pb2.Response.FromString,
+                response_deserializer=reddit__simulation__pb2.DatasourcePost.FromString,
                 )
 
 
 class DataStreamingServiceServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """Server Side Streaming allowing the client to send one message and the server to return numerous replies.
+    """
 
     def StartDatastream(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -36,7 +38,7 @@ def add_DataStreamingServiceServicer_to_server(servicer, server):
             'StartDatastream': grpc.unary_stream_rpc_method_handler(
                     servicer.StartDatastream,
                     request_deserializer=reddit__simulation__pb2.Request.FromString,
-                    response_serializer=reddit__simulation__pb2.Response.SerializeToString,
+                    response_serializer=reddit__simulation__pb2.DatasourcePost.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -46,7 +48,8 @@ def add_DataStreamingServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class DataStreamingService(object):
-    """Missing associated documentation comment in .proto file."""
+    """Server Side Streaming allowing the client to send one message and the server to return numerous replies.
+    """
 
     @staticmethod
     def StartDatastream(request,
@@ -61,6 +64,6 @@ class DataStreamingService(object):
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/DataStreamingService/StartDatastream',
             reddit__simulation__pb2.Request.SerializeToString,
-            reddit__simulation__pb2.Response.FromString,
+            reddit__simulation__pb2.DatasourcePost.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -12,11 +12,11 @@ CLIENT_ID = 1
 def server_streaming_method(stub):
     print("--------------Call ServerStreamingMethod Begin--------------")
     request = reddit_simulation_pb2.Request(client_id=CLIENT_ID,
-                               request_data="called by Python client")
+                               request_data="Ready For Data")
     response_iterator = stub.StartDatastream(request)
     for response in response_iterator:
-        print("recv from server(%d), message=%s" %
-              (response.server_id, response.response_data))
+        print("recv from server, message=%s" %
+              (response.post_id))
 
     print("--------------Call ServerStreamingMethod Over---------------")
 
