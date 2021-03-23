@@ -4,15 +4,13 @@ from concurrent import futures
 import grpc
 import reddit_simulation_pb2_grpc
 import reddit_simulation_pb2
+import logging
 
 import random
 import time
+import os
 
-# Define Global Attributes (Server Address and ID)
-SERVER_ADDRESS = "localhost:23333"
-SERVER_ID = 1
-
-
+print(os.listdir(os.path.curdir))
 # Function to read and parse the dataset entries
 def getData(datasetPath):
     data = []
@@ -40,7 +38,7 @@ class Server(reddit_simulation_pb2_grpc.DataStreamingServiceServicer):
         def send_dataPosts():
             
             # Retrieve the whole dataset TODO: Look at only pulling the numToSend lines from the file
-            data = getData("datasource/short.xls")
+            data = getData("short.xls")
             
             # Define a number of posts to send every run and store a running count
             numToSend = random.randint(1, 5)
@@ -79,14 +77,15 @@ class Server(reddit_simulation_pb2_grpc.DataStreamingServiceServicer):
 
 
 def main():
+    print("Running...")
     # Create a GRPC.Server object
-    server = grpc.server(futures.ThreadPoolExecutor())
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     
     # Add the DataStreamingServiceServicer to the server
     reddit_simulation_pb2_grpc.add_DataStreamingServiceServicer_to_server(Server(), server)
     
     # Define the port to run the Server on
-    server.add_insecure_port(SERVER_ADDRESS)
+    server.add_insecure_port('[::]:50051')
     
     # Start our server
     print("Starting Server...")
@@ -102,4 +101,5 @@ def main():
 
 
 if __name__ == '__main__':
+    logging.basicConfig()
     main()
