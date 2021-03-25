@@ -48,53 +48,100 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <div class="w3-row-padding w3-margin-bottom">
     <div class="w3-third">
       <div class="w3-container w3-blue w3-padding-16">
-        <div class="w3-left"></div>
+        <div class="w3-left">
+		<i class="fa fa-address-card-o w3-xxxlarge"></i>
+	</div>
         <div class="w3-right">
-          <h3 id="totalCases"></h3>
+          <h3 id="metric1">{{avgUsernameLength}}</h3>
         </div>
         <div class="w3-clear"></div>
-        <h4>Metric 1</h4>
+        <h4>Average Username Length</h4>
+	<p>(Aggregate Metric)</p>
       </div>
     </div>
     <div class="w3-third">
       <div class="w3-container w3-teal w3-padding-16">
-        <div class="w3-left"></div>
+        <div class="w3-left">
+		<i class="fa fa-newspaper-o w3-xxxlarge"></i>
+	</div>
         <div class="w3-right">
-          <h3 id="recoveredCount"></h3>
+          <h3 id="metric2">{{numPostsRemoved}}</h3>
         </div>
         <div class="w3-clear"></div>
-        <h4>Metric 2</h4>
+        <h4>Number Of Removed Posts</h4>
+	<p>(Rolling 3 minute metric)</p>
       </div>
     </div>
     <div class="w3-third">
       <div class="w3-container w3-red w3-text-white w3-padding-16">
-        <div class="w3-left"></div>
+        <div class="w3-left">
+		<i class="fa fa-diamond w3-xxxlarge"></i>
+	</div>
         <div class="w3-right">
-          <h3 id="deathCount"></h3>
+          <h3 id="metric4">{{mostActiveAuthor}}</h3>
         </div>
         <div class="w3-clear"></div>
-        <h4>Metric 3</h4>
+        <h4>Most Active Author</h4>
+	<p>(Author with the most non-removed posts)</p>
     </div>
   </div>
 
   <hr>
   <div class="w3-container">
     <h5>Data Flow Progress</h5>
-    <p>Total Posts: 161702 Currently Received: 1</p>
+    <p>Total Posts: 161,702 Currently Received: {{postCount}}</p>
     <div class="w3-grey">
       <div class="w3-container w3-center w3-padding w3-green" style="width:100%" id="totalPostBar"></div>
     </div>
   </div>
   <hr>
     <div class="w3-container">
-    <h5>Featured Post:</h5>
-
+    <h5>Longest Post Title:</h5>
+	<p>(By Word Count: Most)</p>
+	<div class="w3-col m2 text-center">
+		<i class="fa fa-caret-square-o-up w3-xxxlarge"></i>
+	</div>
+	<div class="w3-col m10 w3-container">
+		<h4>
+			{{longestPost.title}} <br>
+			<span class="w3-opacity w3-medium">Author: {{longestPost.author}}</span>
+		</h4>
+	</div>
+  </div>
+    <div class="w3-container">
+    <h5>Shortest Post Title:</h5>
+	<p>(By Word Count: Least)</p>
+	<div class="w3-col m2 text-center">
+		<i class="fa fa-caret-square-o-down w3-xxxlarge"></i>
+	</div>
+	<div class="w3-col m10 w3-container">
+		<h4>
+			{{shortestPost.title}} <br>
+			<span class="w3-opacity w3-medium">Author: {{shortestPost.author}}</span>
+		</h4>
+	</div>
 
   </div>
   <hr>
   <div class="w3-container">
     <h5>Data is Beautiful News Feed:</h5>
-    
+	<table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+		<tbody>
+				<tr>
+					<th>Post Title</th>
+					<th>Author</th>
+					<th>Post ID</th>
+				</tr>
+			{%for i in range(0, postCount)%}
+				<tr>
+					<td>{{posts[i].title}}</td>
+					<td>{{posts[i].author}}</td>
+					<td>{{posts[i].post_ID}}</td>
+				</tr>
+			{%endfor%}
+		</tbody>
+	</table>
+				 
   </div>
   <hr>
   <!-- Footer -->
@@ -149,9 +196,7 @@ function updateSmallBars(id, total, data){
 	element.innerHTML = data.toLocaleString()+"&nbsp&nbsp("+percentage.toLocaleString()+"%)"
 }
 
-updateSmallBars(totalPostBar, 161702, {{ postCount }})
+updateSmallBars("totalPostBar", 161702, {{ postCount }});
 </script>
 </body>
-
-
 </html>

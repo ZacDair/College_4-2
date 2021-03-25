@@ -17,7 +17,7 @@ services:
         image: redis:alpine
         ports:
             - "6379:6379"
-    weblogs:
+    web-dash:
         build:
             context: web-dashboard
             dockerfile: Dockerfile
