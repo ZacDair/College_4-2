@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<title>COMP8054 W6 Lab</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.5.0/d3.min.js " type="text/JavaScript"></script>
+	
+    <style>
+    </style>
+  </head>
+  
+  
+  <body id="theBody">
+	
+	<h3>Dynamic Circle Chart</h3>
+	<div id="div1">
+		<script>
+		function readDataFromFile(key){
+			// Read in the csv file
+			d3.csv("worldcup.csv", d3.autoType).then(function(data){
+				if (key == null){
+					key = "win"
+					createSoccerViz(data, key);
+					createControlButtons(data);
+				}
+				else{
+					updateSoccerViz(data, key);
+				}
+			}).catch(function(error){
+				// handle error
+				console.log(error);				
+			});
+		}
+		
+		// Read data from the files and ouput to console log
+		readDataFromFile();
+		
+		// Display the data from the dataset
+		function createSoccerViz(data, valueName){
+			
+			let minValue = d3.min(data, function(d){ return d[valueName]});
+			let maxValue = d3.max(data, function(d){ return d[valueName]});
+			console.log(minValue)
+			console.log(maxValue)
+			const color = d3.scaleQuantize()
+				.domain([minValue, maxValue])
+				.range(["#f3f6e7", "#e7eecf", "#dbe5b7", "#d0dd9f", "#c4d587", "#b8cd6f", "#acc457", "#a1bc3f", "#94b327", "#89ab0f"]);
+			
+			var raidusScale = d3.scaleLog().range ([minValue, maxValue]);
+			
+			var bodySelection = d3.select("#div1");
+			for (index in data){
+				if (index < data.length){
+					var svgSelection = bodySelection.append("svg")
+										.attr("width", 100)
+										.attr("height", 120)
+										.style("background-color", "#999894");
+
+					var circleSelection = svgSelection.append("circle")
+											  .attr("id", "circle"+index)
+											  .attr("cx", 50)
+											  .attr("cy", 50)
+											  .attr("r", raidusScale(data[index][valueName]))
+											  .style("fill", color(data[index][valueName]))
+											  .style("transition", "0.4s")
+											  .on("mouseover", function (d){ 
+												previous = d3.select(this).style("fill");
+												d3.select(this).style("fill", "#5ebf0a");		
+											  })
+											  .on("mouseout", function (d){ d3.select(this).style("fill", previous)});
+											  
+					var textSelection = svgSelection.append("text")
+											  .attr("x", 50)
+											  .attr("y", 100)
+											  .attr("text-anchor", "middle")
+											  .text(data[index]["team"]);
+				
+				}
+			}
+		}
+		
+		
+		function createControlButtons(data){
+			var bodySelection = d3.select("#div1");
+			bodySelection.append("br");
+			for (index in Object.keys(data[0])){
+				if (index > 1){
+					let functionName = "readDataFromFile('" + Object.keys(data[0])[index] + "')"
+					var buttonSelection = bodySelection.append("button")
+											.attr("onclick", functionName)
+											.text(Object.keys(data[0])[index]);
+				}
+			}
+		}
+		
+		function updateSoccerViz(data, key){
+			let minValue = d3.min(data, function(d){ return d[key]});
+			let maxValue = d3.max(data, function(d){ return d[key]});
+			var raidusScale = d3.scaleQuantize().range([minValue, maxValue]);
+			for (index in data){
+				if (index < data.length){
+					var circle = d3.select("#circle" + index);
+					circle.attr("r", raidusScale(data[index][key])+10);
+				}
+			}
+		}
+		</script>
+	</div>
+	
+  </body>
+  
+</html>
