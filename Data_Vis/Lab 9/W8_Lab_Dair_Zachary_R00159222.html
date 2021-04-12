@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<title>COMP8054 W8 Lab</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.5.0/d3.min.js " type="text/JavaScript"></script>
+	
+    <style>
+    </style>
+  </head>
+  
+  
+  <body id="theBody">
+	
+	<h3>Chart Components and Layouts</h3>
+	
+	<div id="div1">
+		<h4>Stacked Chart</h4>
+		<p> for some reason the area is not appearing in the svg despite the code below </p>
+		<script>
+		// set the dimensions and margins of the graph
+		var margin = {top: 20, right: 30, bottom: 0, left: 10},
+			width = 460 - margin.left - margin.right,
+			height = 400 - margin.top - margin.bottom;
+
+		// append the svg object to the body of the page
+		var svg = d3.select("#div1")
+		  .append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+		  .append("g")
+			.attr("transform",
+				  "translate(" + margin.left + "," + margin.top + ")");
+
+		// Parse the Data
+		d3.csv("movies.csv", function(data) {
+
+		  // List of groups = header of the csv files
+		  var keys = [data[0]];
+
+		  // Add X axis
+		  var x = d3.scaleLinear()
+			.domain([0, 10])
+			.range([ 0, width]);
+		
+		  svg.append("g")
+			.attr("transform", "translate(0," + height*0.8 + ")")
+			.call(d3.axisBottom(x).tickSize(-height*.7).tickValues([0, 5, 10]))
+			.select(".domain").remove()
+		  // Customization
+		  svg.selectAll(".tick line").attr("stroke", "#b8b8b8")
+
+		  // Add X axis label:
+		  svg.append("text")
+			  .attr("text-anchor", "end")
+			  .attr("x", width)
+			  .attr("y", height-30 )
+			  .text("Time (year)");
+
+		  // Add Y axis
+		  var y = d3.scaleLinear()
+			.domain([-100000, 100000])
+			.range([ height, 0 ]);
+
+		  // color palette
+		  var color = d3.scaleOrdinal()
+			.range(d3.schemeDark2);
+
+		  //stack the data?
+		  for (x in data[0]) {
+			  if (x != "day") {
+				var newMovieObject = {name: x, values: []};
+				for (y in incData) {
+				  newMovieObject.values.push({x: parseInt(data[y]["day"]) ,y: parseInt(data[y][x])})
+				}
+				stackData.push(newMovieObject);
+			  }
+			}
+			
+		  var stackData = [];
+		  var stackedData = d3.stack()
+			.offset(d3.stackOffsetSilhouette)
+			.keys(keys)
+			(stackData)
+
+		  // create a tooltip
+		  var Tooltip = svg
+			.append("text")
+			.attr("x", 0)
+			.attr("y", 0)
+			.style("opacity", 0)
+			.style("font-size", 17)
+
+		  // Three function that change the tooltip when user hover / move / leave a cell
+		  var mouseover = function(d) {
+			Tooltip.style("opacity", 1)
+			d3.selectAll(".myArea").style("opacity", .2)
+			d3.select(this)
+			  .style("stroke", "black")
+			  .style("opacity", 1)
+		  }
+		  var mousemove = function(d,i) {
+			grp = keys[i]
+			Tooltip.text(grp)
+		  }
+		  var mouseleave = function(d) {
+			Tooltip.style("opacity", 0)
+			d3.selectAll(".myArea").style("opacity", 1).style("stroke", "none")
+		   }
+
+		  // Area generator
+		  var stackArea = d3.area()
+			.curve(d3.curveBasis)
+			.x(function(d) { return xScale(d.x); })
+			.y0(function(d) { return yScale(d.y0); })
+			.y1(function(d) { return yScale(d.y0 + d.y); });
+
+		  // Show the areas
+		  svg
+			.selectAll("mylayers")
+			.data(stackedData)
+			.enter()
+			.append("path")
+			  .attr("class", "myArea")
+			  .style("fill", function(d) { return color(d.key); })
+			  .attr("d", stackArea)
+			  .on("mouseover", mouseover)
+			  .on("mousemove", mousemove)
+			  .on("mouseleave", mouseleave)
+
+		})
+		
+		</script>
+	</div>
+	
+	<div id="div2">
+		<h4>Histogram - (tweets.json)</h4>
+		<script>
+		// Read in the csv file
+		d3.json("tweets.json", d3.autoType).then(function(data){
+			
+		console.log(data);
+		// set the dimensions and margins of the graph
+		var margin = {top: 10, right: 30, bottom: 30, left: 40},
+			width = 460 - margin.left - margin.right,
+			height = 400 - margin.top - margin.bottom;
+
+		// append the svg object to the body of the page
+		var svg = d3.select("#div2")
+		  .append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+		  .append("g")
+			.attr("transform",
+				  "translate(" + margin.left + "," + margin.top + ")");
+
+		  // X axis: scale and draw:
+		  var x = d3.scaleLinear()
+			  .domain([0, 5])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
+			  .range([0, width]);
+		  svg.append("g")
+			  .attr("transform", "translate(0," + height + ")")
+			  .call(d3.axisBottom(x));
+
+		  // set the parameters for the histogram
+		  var histogram = d3.histogram()
+			  .value(function(d) { return [d.retweets].length; })   // I need to give the vector of value
+			  .domain(x.domain())  // then the domain of the graphic
+			  .thresholds(x.ticks(5)); // then the numbers of bins
+
+		  // And apply this function to data to get the bins
+		  var bins = histogram(data);
+
+		  // Y axis: scale and draw:
+		  var y = d3.scaleLinear()
+			  .range([height, 0]);
+			  y.domain([0, d3.max(bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
+		  svg.append("g")
+			  .call(d3.axisLeft(y));
+
+		  // append the bar rectangles to the svg element
+		  svg.selectAll("rect")
+			  .data(bins)
+			  .enter()
+			  .append("rect")
+				.attr("x", 1)
+				.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
+				.attr("width", function(d) { return 70; })
+				.attr("height", function(d) { return height - y(d.length); })
+				.style("fill", "#69b3a2")
+
+		}).catch(function(error){
+			// handle error
+			console.log(error);				
+		});
+		</script>
+	</div>
+	
+	<div id="div3">
+		<h4>Histogram - interactive bar chart (worldcup.csv)</h4>
+		<script>
+		// Read in the csv file
+		d3.csv("movies.csv", d3.autoType).then(function(data){
+			
+		}).catch(function(error){
+			// handle error
+			console.log(error);				
+		});
+		
+		</script>
+	</div>
+	
+  </body>
+  
+</html>

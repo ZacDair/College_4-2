@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<title>COMP8054 W3 Lab</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.5.0/d3.min.js " type="text/JavaScript"></script>
+	
+    <style>
+    </style>
+  </head>
+  
+  
+  <body id="theBody">
+	
+	<h3>Reading in data - Outputting to console</h3>
+	
+	<script>
+	function readDataFromFile(){
+		
+		// Read in the csv file
+		d3.csv("cities.csv").then(function(data){
+			console.log("\nStandard Reading from File:")
+			console.log("Cities:\n")
+			dataViz(data);
+			showDataTypes(data, "label", "String", "String");
+			showDataTypes(data, "population", "String", "Integer");
+			showDataTypes(data, "country", "String", "String");
+			showDataTypes(data, "x", "String", "Float");
+		}).catch(function(error){
+			// handle error
+			console.log(error);				
+		});
+		
+		// Read in the json file
+		d3.json("tweets.json").then(function(data){
+			console.log("Tweets:\n")
+			dataViz(data);
+			showDataTypes(data, "user", "String", "String");
+			showDataTypes(data, "content", "String", "Integer");
+			showDataTypes(data, "favorites", "String", "Array");
+		}).catch(function(error){
+			// handle error
+			console.log(error);				
+		});
+	}
+	
+	// Read data from the files and ouput to console log
+	readDataFromFile()
+	
+	// Display the data from the dataset
+	function dataViz(ourData){
+		console.log(ourData);
+	}
+	
+	// Iterate through the dataset, using a column name, expected type and wanted type compared to the actual 
+	function showDataTypes(ourData, dataLabel, expectedType, wantedTyped){
+		for(datapoint in ourData){
+			console.log("Expected:", expectedType, "Wanted:", wantedTyped, "Got: ",typeof(ourData[datapoint][dataLabel]),"\n");
+		}
+	}
+	
+	// Read in the data from the files using auto-type
+	function betterReadDataFromFile(){
+		
+		// Read in the csv file
+		d3.csv("cities.csv", d3.autoType).then(function(data){
+			console.log("\nTesting Auto Type:\n");
+			console.log("Cities:\n")
+			dataViz(data);
+			showDataTypes(data, "label", "String", "String");
+			showDataTypes(data, "population", "Integer", "Integer");
+			showDataTypes(data, "country", "String", "String");
+			showDataTypes(data, "x", "Float", "Float");
+		}).catch(function(error){
+			// handle error
+			console.log(error);				
+		});
+		
+		// Read in the json file
+		d3.json("tweets.json", d3.autoType).then(function(data){
+			console.log("Tweets:\n")
+			dataViz(data);
+			showDataTypes(data, "user", "String", "String");
+			showDataTypes(data, "content", "Integer", "Integer");
+			showDataTypes(data, "favorites", "Array", "Array");
+		}).catch(function(error){
+			// handle error
+			console.log(error);				
+		});
+	}
+	
+	betterReadDataFromFile();
+	
+	function formattingData(){
+		// Read in the csv file
+		d3.csv("cities.csv", d3.autoType).then(function(data){
+		console.log("\nFormatting/Scaling\n")
+		
+		// Get the max and min population values
+		var maxPop = d3.max(data, function(d) { return d.population; });
+		var minPop = d3.min(data, function(d) { return d.population; });
+		console.log("Max Pop:", maxPop);
+		console.log("Min Pop:", minPop);
+		
+		// Define the numerical linear scale
+		var numScale = d3.scaleLinear()
+			.domain([0, 10])
+			.range([minPop, maxPop]);
+		
+		console.log("Scale 0:", numScale(0)) // Min
+		console.log("Scale 5:", numScale(5)) // Mid
+		console.log("Scale 10:", numScale(10)) // Max
+		
+		// Define the rgb scale - green being low, red being high
+		var rgbScale = d3.scaleLinear()
+			.domain([0, 10])
+			.range(["#00FF00", "#FF0000"]);
+		
+		console.log("Scale 0:", rgbScale(0)) // Min - Green
+		console.log("Scale 5:", rgbScale(5)) // Mid - Halfway between Green and Red
+		console.log("Scale 10:", rgbScale(10)) // Max - Red
+		
+		
+		// Get all the population values into one list
+		var populationList = [];
+		for (entry in data){
+			// How do I removed the undefined ? I presume this is the header ie.population in this case
+			populationList.push(data[entry]["population"]);
+		}
+		
+		// Define the quantileScale
+		var quantileScale = d3.scaleQuantile()
+			.domain(populationList)
+			.range(['Low Population', 'Medium Population', 'High Population']);
+			
+		console.log("Scale 1000:", quantileScale(1000)) // Low
+		console.log("Scale 2500000:", quantileScale(2500000)) // Medium
+		console.log("Scale 13000000:", quantileScale(13000000)) // High
+		
+	}).catch(function(error){
+		// handle error
+		console.log(error);				
+	});
+		
+	}
+	
+	
+	formattingData()
+	
+	</script>
+  </body>
+  
+</html>

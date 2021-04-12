@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<title>COMP8054 W4 Lab</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.5.0/d3.min.js " type="text/JavaScript"></script>
+    <style>
+    </style>
+  </head>
+  
+  
+  <body id="theBody">
+	
+	<h3>Histograms and Scatterplots</h3>
+	
+	<script>
+		// Define a list of athlete objects
+		athletes = [
+			  {name: "Floyd Mayweather", sport: "Boxing", nation: "United States", earnings: 285},
+			  {name: "Lionel Messi", sport: "Soccer", nation: "Argentina", earnings: 111},
+			  {name: "Cristiano Ronaldo", sport: "Soccer", nation: "Portugal", earnings: 108},
+			  {name: "Conor McGregor", sport: "MMA", nation: "Ireland", earnings: 99},
+			  {name: "Neymar", sport: "Soccer", nation: "Brazil", earnings: 90},
+			  {name: "LeBron James", sport: "Basketball", nation: "United States",  earnings: 85.5},
+			  {name: "Roger Federer", sport: "Tennis", nation: "Switzerland", earnings: 77.2},
+			  {name: "Stephen Curry", sport: "Basketball", nation: "United States", earnings: 76.9},
+			  {name: "Matt Ryan", sport: "Football", nation: "United States", earnings: 67.3},
+			  {name: "Matthew Stafford", sport: "Football", nation: "United States", earnings: 59.5}
+			]
+		
+		// Grouped by single key
+		athletesBySport = d3.group(athletes, d => d.sport);
+		console.log("Basketball Athletes:");
+		console.log(athletesBySport.get("Basketball"));
+		
+		
+		// Omitted Table due to strange issues
+		const html = String.raw;
+		html`<table>
+			<thead>
+				<tr><th>Sport</th><th>Athletes</th></tr>
+			  </thead>
+			  <tbody>${Array.from(athletesBySport, ([key, values]) => html`
+				<tr>
+				  <td>${key}</td>
+				  <td>${values.map(d => d.name).join(", ")}</td>
+				</tr>`)}</tbody>
+			</table>`
+		
+		// Grouped by multiple keys
+		athletesByNationSport = d3.group(athletes, d => d.nation, d => d.sport)
+		console.log("US Boxing Athletes:");
+		console.log(athletesByNationSport.get("United States").get("Boxing"));
+		
+		// Group by first letter of each name (Object Returned)
+		byFirstLetter = d3.group(athletes, d => d.name[0])
+		console.log("Grouped by first letter of each name (OBJECT):");
+		console.log(byFirstLetter);
+		
+		// Group by first letter of each name (Nested Array Returned)
+		byFirstLetter = d3.groups(athletes, d => d.name[0])
+		console.log("Grouped by first letter of each name (NESTED ARRAY):");
+		console.log(byFirstLetter);
+		
+		console.log("Grouped (NESTED ARRAY):");
+		byFirstLetter = d3.groups(athletes, d => d.name, d => d.sport)
+		console.log(byFirstLetter);
+		
+	</script>
+</body>
+</html>
+	
