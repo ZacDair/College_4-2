@@ -92,10 +92,39 @@ def compute_page_rank(edges_per_node, reset_probability, max_iterations):
     # Key => The node number
     # Value => The PageRank value computed for this node.
 
+    pageRankDict = {}
+    nodes = edges_per_node.keys()
+    for node in nodes:
+        pageRankDict[node] = 1.00
+
+    for i in range(max_iterations):
+        for node in nodes:
+            cumulativePR = 0.0
+            for neighbour in edges_per_node[node][1]:
+                cumulativePR += (pageRankDict[neighbour]) / len(edges_per_node[neighbour][1])
+                pageRankDict[node] = (reset_probability) + (1 - reset_probability) * cumulativePR
+            #pageRankDict[node] = cumulativePR
+        print(sum(pageRankDict.values()))
+
+
+    '''PAGE RANK: Where the sum of all Page ranks is equal to 1'''
+    # for i in range(max_iterations):
+    #     for node in nodes:
+    #         neighbourCumulative = 0
+    #         for neighbour in edges_per_node[node][1]:
+    #             neighbourCumulative += pageRankDict[neighbour] / edges_per_node[neighbour][0]
+    #             pageRankDict[node] = (1 - reset_probability) + (reset_probability * neighbourCumulative)
+    #     print(sum(pageRankDict.values()))
+
+    # for i in range(max_iterations):
+    #     for nodeOG in nodes:
+    #         pagerank_sum = sum((pageRankDict[nodeOG] / edges_per_node[node][0]) for node in edges_per_node[nodeOG][1])
+    #         random_walk =  (1 - reset_probability)
+    #         #random_walk = reset_probability / len(nodes)
+    #         pageRankDict[nodeOG] = random_walk + (reset_probability) * pagerank_sum
+    #     print(sum(pageRankDict.values()))
     # Type all your code here.
-    pass
-
-
+    return pageRankDict
 
 
 
@@ -145,10 +174,10 @@ if __name__ == '__main__':
     local_False_databricks_True = False
 
     # 3. We set the path to my_dataset and my_result
-    my_local_path = "../../../../3_Code_Examples/L15-25_Spark_Environment/"
-    my_databricks_path = "/"
+    my_local_path = "../../"
+    my_databricks_path = "/FileStore/tables/"
 
-    my_dataset_dir = "FileStore/tables/6_Assignments/my_dataset_2/"
+    my_dataset_dir = "my_datasets/my_dataset_2/"
 
     if local_False_databricks_True == False:
         my_dataset_dir = my_local_path + my_dataset_dir

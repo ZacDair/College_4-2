@@ -65,11 +65,18 @@ def my_main(spark, my_dataset_dir):
     # (4) The resVAL iterator returned by 'collect' must be printed straight away, you cannot edit it to alter its format for printing.
 
     # Type all your code here. Use as many Spark SQL operations as needed.
-    pass
+    startDF = inputDF.groupBy("start_station_name").count().withColumnRenamed("count",
+                                                                              "num_departure_trips").withColumnRenamed(
+        "start_station_name", "station")
+    stopDF = inputDF.groupBy("stop_station_name").count().withColumnRenamed("count",
+                                                                            "num_arrival_trips").withColumnRenamed(
+        "stop_station_name", "station")
 
+    combinedDF = startDF.join(stopDF, "station", "full").na.fill(0)
 
+    sortedDF = combinedDF.orderBy("station", ascending=True)
 
-
+    solutionDF = sortedDF
 
     # ------------------------------------------------
     # END OF YOUR CODE
@@ -102,10 +109,10 @@ if __name__ == '__main__':
     local_False_databricks_True = False
 
     # 3. We set the path to my_dataset and my_result
-    my_local_path = "../../../../3_Code_Examples/L15-25_Spark_Environment/"
-    my_databricks_path = "/"
+    my_local_path = "../../"
+    my_databricks_path = "/FileStore/tables/"
 
-    my_dataset_dir = "FileStore/tables/6_Assignments/my_dataset_1/"
+    my_dataset_dir = "my_datasets/my_dataset_1"
 
     if local_False_databricks_True == False:
         my_dataset_dir = my_local_path + my_dataset_dir
