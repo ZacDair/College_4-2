@@ -65,10 +65,19 @@ def my_main(spark, my_dataset_dir, bike_id):
     # (4) The resVAL iterator returned by 'collect' must be printed straight away, you cannot edit it to alter its format for printing.
 
     # Type all your code here. Use as many Spark SQL operations as needed.
-    pass
+    specificBikeDF = inputDF.filter("bike_id ==" + str(bike_id))
 
+    dataWindow = pyspark.sql.Window.partitionBy(specificBikeDF["bike_id"]).orderBy([specificBikeDF["start_time"].asc(), specificBikeDF["start_time"].asc()])
 
+    laggedDF = specificBikeDF.withColumn("prev_station", pyspark.sql.functions.lag(specificBikeDF["stop_station_name"], 1).over(dataWindow)).orderBy([specificBikeDF["start_time"].asc(), specificBikeDF["start_time"].asc()])
+    laggedDF = laggedDF.withColumn("prev_time", pyspark.sql.functions.lag(specificBikeDF["stop_time"], 1).over(dataWindow))
+    laggedDF = laggedDF.filter(laggedDF["prev_station"].isNotNull())
 
+    filteredDF = laggedDF.filter("start_station_name != prev_station").select(["prev_time", "prev_station", "start_time", "start_station_name"])
+
+    resultDF = filteredDF.withColumnRenamed("start_station_name","stop_station_name").withColumnRenamed("start_time","stop_time").withColumnRenamed("prev_station","start_station_name").withColumnRenamed("prev_time","start_time")
+
+    solutionDF = resultDF
 
 
     # ------------------------------------------------
@@ -79,6 +88,7 @@ def my_main(spark, my_dataset_dir, bike_id):
     resVAL = solutionDF.collect()
     for item in resVAL:
         print(item)
+
 
 # --------------------------------------------------------
 #
@@ -102,10 +112,10 @@ if __name__ == '__main__':
     local_False_databricks_True = False
 
     # 3. We set the path to my_dataset and my_result
-    my_local_path = "../../../../3_Code_Examples/L15-25_Spark_Environment/"
-    my_databricks_path = "/"
+    my_local_path = "../../"
+    my_databricks_path = "/FileStore/tables/"
 
-    my_dataset_dir = "FileStore/tables/6_Assignments/my_dataset_1/"
+    my_dataset_dir = "my_datasets/my_dataset_1"
 
     if local_False_databricks_True == False:
         my_dataset_dir = my_local_path + my_dataset_dir

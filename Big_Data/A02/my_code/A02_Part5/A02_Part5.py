@@ -52,7 +52,15 @@ def my_main(spark, my_dataset_dir, source_node):
     # (4) The resVAL iterator returned by 'collect' must be printed straight away, you cannot edit it to alter its format for printing.
 
     # Type all your code here. Use as many Spark SQL operations as needed.
-    pass
+
+    # Store all possible nodes
+    nodeDF = inputDF.select("source").distinct()
+
+    pathDF = nodeDF.withColumn("cost", pyspark.sql.functions.lit(1000000)).withColumn("path", pyspark.sql.functions.lit(str(source_node)))
+
+    minNeighbours = inputDF.groupby("source").min("weight")
+
+    res = minNeighbours.join(inputDF, "source", "cross").show()
 
 
 
@@ -63,9 +71,9 @@ def my_main(spark, my_dataset_dir, source_node):
     # ------------------------------------------------
 
     # Operation A1: 'collect' to get all results
-    resVAL = solutionDF.collect()
-    for item in resVAL:
-        print(item)
+    # resVAL = solutionDF.collect()
+    # for item in resVAL:
+    #     print(item)
 
 # --------------------------------------------------------
 #
@@ -89,10 +97,10 @@ if __name__ == '__main__':
     local_False_databricks_True = False
 
     # 3. We set the path to my_dataset and my_result
-    my_local_path = "../../../../3_Code_Examples/L15-25_Spark_Environment/"
-    my_databricks_path = "/"
+    my_local_path = "../../"
+    my_databricks_path = "/FileStore/tables/"
 
-    my_dataset_dir = "FileStore/tables/6_Assignments/my_dataset_3/"
+    my_dataset_dir = "my_datasets/my_dataset_3/"
 
     if local_False_databricks_True == False:
         my_dataset_dir = my_local_path + my_dataset_dir
