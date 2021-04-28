@@ -97,33 +97,18 @@ def compute_page_rank(edges_per_node, reset_probability, max_iterations):
     for node in nodes:
         pageRankDict[node] = 1.00
 
+    cumulativePR = {}
     for i in range(max_iterations):
         for node in nodes:
-            cumulativePR = 0.0
+            cumulativePR[node] = 0.0
+
+        for node in nodes:
             for neighbour in edges_per_node[node][1]:
-                cumulativePR += (pageRankDict[neighbour]) / len(edges_per_node[neighbour][1])
-                pageRankDict[node] = (reset_probability) + (1 - reset_probability) * cumulativePR
-            #pageRankDict[node] = cumulativePR
-        print(sum(pageRankDict.values()))
+                cumulativePR[neighbour] += pageRankDict[node]/edges_per_node[node][0]
 
+        for node in nodes:
+            pageRankDict[node] = reset_probability + (1 - reset_probability) * cumulativePR[node]
 
-    '''PAGE RANK: Where the sum of all Page ranks is equal to 1'''
-    # for i in range(max_iterations):
-    #     for node in nodes:
-    #         neighbourCumulative = 0
-    #         for neighbour in edges_per_node[node][1]:
-    #             neighbourCumulative += pageRankDict[neighbour] / edges_per_node[neighbour][0]
-    #             pageRankDict[node] = (1 - reset_probability) + (reset_probability * neighbourCumulative)
-    #     print(sum(pageRankDict.values()))
-
-    # for i in range(max_iterations):
-    #     for nodeOG in nodes:
-    #         pagerank_sum = sum((pageRankDict[nodeOG] / edges_per_node[node][0]) for node in edges_per_node[nodeOG][1])
-    #         random_walk =  (1 - reset_probability)
-    #         #random_walk = reset_probability / len(nodes)
-    #         pageRankDict[nodeOG] = random_walk + (reset_probability) * pagerank_sum
-    #     print(sum(pageRankDict.values()))
-    # Type all your code here.
     return pageRankDict
 
 

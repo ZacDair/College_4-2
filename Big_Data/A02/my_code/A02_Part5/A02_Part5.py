@@ -53,14 +53,67 @@ def my_main(spark, my_dataset_dir, source_node):
 
     # Type all your code here. Use as many Spark SQL operations as needed.
 
-    # Store all possible nodes
-    nodeDF = inputDF.select("source").distinct()
+    # Get the nodes connected to the source node
+    neighbours = inputDF.filter("source == " + str(source_node))
+    neighbours.persist()
 
-    pathDF = nodeDF.withColumn("cost", pyspark.sql.functions.lit(1000000)).withColumn("path", pyspark.sql.functions.lit(str(source_node)))
+    # Create a dataframe for the results using a row for each node
+    resultDF = inputDF.select("source").filter("source == " + str(source_node)).withColumn("cost", pyspark.sql.functions.lit(0)).distinct().withColumn("path", pyspark.sql.functions.lit(source_node))
+    resultDF.persist()
 
-    minNeighbours = inputDF.groupby("source").min("weight")
+    # While we have neighbours/nodes to check, keep running
+    while resultDF.count() != inputDF.select("source").distinct().count():
 
-    res = minNeighbours.join(inputDF, "source", "cross").show()
+        # Combine with the neighbours with the results to get the costs per path
+        costsDF = neighbours.join(resultDF, "source", "left").withColumn("updated_cost", pyspark.sql.functions.col("weight") + pyspark.sql.functions.col("cost"))\
+            .withColumn("updated_path", pyspark.sql.functions.concat_ws("-", resultDF["path"], neighbours["target"]))
+        costsDF.persist()
+
+        # Drop extra columns
+        costsDF = costsDF.drop("cost").drop("weight").drop("path").drop("source")
+
+        # Sort the DF by path cost
+        orderedDF = costsDF.sort("updated_cost", ascending=True)
+        costsDF.unpersist()
+
+        # Pick node at the top (the one with the shortest path)
+        bestNode = orderedDF.limit(1).withColumnRenamed("target", "node")
+        bestNode.persist()
+
+        # Copy of the best node for joining
+        bestNodeC = bestNode.withColumnRenamed("node", "source").withColumnRenamed("updated_cost", "cost").withColumnRenamed("updated_path", "path")
+        bestNodeC.persist()
+
+        # Add the bestNode path cost and path string to the resultDF
+        resultDF = resultDF.union(bestNodeC).sort("source", ascending=True)
+
+        # Drop the extra columns
+        bestNode.drop("updated_cost").drop("updated_path")
+
+        # Find the nodes that are the target of our current best node
+        new_neighbours = bestNode.join(inputDF, bestNode["node"] == inputDF["source"], "left")
+        new_neighbours.persist()
+        new_neighbours = new_neighbours.drop("node").drop("updated_cost").drop("updated_path")
+
+        # Append our new nodes to the DataFrame to be analysed
+        neighbours = neighbours.union(new_neighbours)
+
+        # Only add neighbours that aren't pointing to the best node and aren't pointing to a node we already went to
+        neighbours = neighbours.join(bestNode, bestNode["node"] == neighbours["target"], "left_anti").withColumnRenamed("source", "src")
+        neighbours = neighbours.join(resultDF, neighbours["target"] == resultDF["source"], "left_anti").withColumnRenamed("src", "source")
+
+        bestNode.unpersist()
+        bestNodeC.unpersist()
+        new_neighbours.unpersist()
+
+    solutionDF = resultDF.withColumnRenamed("source", "id")
+
+
+
+
+
+
+
 
 
 
@@ -71,9 +124,9 @@ def my_main(spark, my_dataset_dir, source_node):
     # ------------------------------------------------
 
     # Operation A1: 'collect' to get all results
-    # resVAL = solutionDF.collect()
-    # for item in resVAL:
-    #     print(item)
+    resVAL = solutionDF.collect()
+    for item in resVAL:
+        print(item)
 
 # --------------------------------------------------------
 #
