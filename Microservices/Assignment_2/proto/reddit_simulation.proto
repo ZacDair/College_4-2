@@ -1,0 +1,30 @@
+//My Reddit Simulation Proto File
+
+syntax  = "proto3";
+
+// Expected Client Input to start the dataflow
+message Request {
+    int64 client_id = 1;
+    string request_data = 2;
+}
+
+// Expected Server Output Element Structure
+message DatasourcePost {
+    string post_id = 1;
+    string title = 2;
+    int64 score = 3;
+    string author = 4;
+    string author_flair = 5;
+    string removed_by = 6;
+    int64 total_awards = 7;
+    string awarders = 8;
+    int64 created_timestamp = 9;
+    string link = 10;
+    int64 num_comments = 11;
+    bool over_18 = 12;
+}
+
+// Server Side Streaming allowing the client to send one message and the server to return numerous replies.
+service DataStreamingService{
+	rpc StartDatastream(Request) returns (stream DatasourcePost);
+}

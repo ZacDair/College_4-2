@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: client-deploy
+spec:
+    replicas: 10
+    selector:
+        matchLabels:
+            app: a02-client
+    minReadySeconds: 10
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxUnavailable: 1
+            maxSurge: 1
+    template:
+        metadata:
+            labels:
+                app: a02-client
+        spec:
+            containers:
+            - name: a02-client
+              image: zacdair/a02-client:latest
+                
