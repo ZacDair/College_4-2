@@ -29,15 +29,13 @@ def server_streaming_method(stub):
         postDetails = response.post_id + " , " + response.title + " , " + str(response.score) + " , " +\
             response.author + " , " + response.author_flair + " , " + response.removed_by + " , " +\
             str(response.total_awards) + " , " + response.awarders + " , " + str(response.created_timestamp) + " , " +\
-            response.link + " , " + str(response.num_comments) + " , " + str(response.over_18)
-
-        print(postDetails)
+            response.link + " , " + str(response.num_comments) + " , " + str(response.over_18) + " , " + str(datetime.datetime.now())
         
         # Store a basic log message and the reddit post 
         try:
             conn = redis.StrictRedis(host='redis', port=6379)
             conn.set("log.client." + str(datetime.datetime.now()), "Reddit Post:" + response.post_id)
-            conn.set("client.post" + response.post_id, postDetails)
+            conn.set("post." + response.post_id, postDetails)
         except Exception as ex:
             print('Error:', ex)
 

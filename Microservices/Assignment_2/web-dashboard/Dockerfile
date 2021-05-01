@@ -5,7 +5,8 @@ FROM python:3-stretch
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY web-dash.py requirements.txt /app/
+COPY web-dash.py requirements.txt  /app/
+COPY /webpages /app/webpages
 
 # Install any needed packages specified in the requirements.txt
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
