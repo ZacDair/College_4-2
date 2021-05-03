@@ -1,11 +1,46 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request, Response
 
 import redis
 import datetime
+import time
+
+from appmetrics import metrics
+
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+import io
+import requests as req
+
 
 # Alter the default template path with our custom location
 webpagePath = "webpages/"
 app = Flask(__name__, template_folder=webpagePath)
+
+# Define Our Monitoring Metrics
+metrics.new_histogram("ping")
+metrics.new_meter("request_count")
+
+# Helper functions to start and end timers when requests are made
+def start_timer():
+    request.start_time = time.time()
+    metrics.metric("request_count").notify(1)
+
+        
+def stop_timer(response):
+    resp_time = (time.time() - request.start_time)*1000
+    metrics.metric("ping").notify(resp_time)
+    print(resp_time)
+    return response
+
+
+# Initialise when to run the above helpers
+def setup_metrics(my_app):  
+    my_app.before_request(start_timer)
+    my_app.after_request(stop_timer)
+
+
+# Connect our helpers to the app
+setup_metrics(app)
 
 
 # Logging function when /logs is accessed, this shows the data flow on a basic level
@@ -135,9 +170,56 @@ def dashboard():
     else:
         mostActiveAuthor = "N/A"
     
-    
     return render_template("dashboard.html", postCount=len(posts), avgUsernameLength=avgUsernameLength, numPostsRemoved=numPostsRemoved, mostActiveAuthor=mostActiveAuthor, longestPost=longestPost, shortestPost=shortestPost, posts=posts)
 
+
+# Metrics Monitoring Route
+@app.route('/monitor')
+def monitor():
+    response = {
+            "success": True,
+            "status_code": 200,
+            "metrics": {"request_count":metrics.metric("request_count").get(),
+                        "ping_histogram":metrics.metric("ping").get()}
+    }
+    return jsonify(response)
+
+# Metrics Monitoring - 5 Request Ping Test
+@app.route('/monitor/pingtest')
+def monitor_pingtest():
+    # Store the iterations, ping and ping status counts
+    iterations = []
+    meanPing = []
+    pingResults = {"Success": 0, "Failed": 0}
+
+    # Loop n times, performing a request and storing the result and ping
+    i = 1
+    while i <= 5:
+        r = req.get("http://localhost:5000/monitor/ping-dest")
+        if r.status_code == 200:
+            pingResults["Success"] += 1
+        else:
+            pingResults["Failed"] += 1
+        iterations.append(str(i))
+        meanPing.append(metrics.metric("ping").get()["arithmetic_mean"])
+        i+=1
+
+    # Plot the ping graph
+    fig = plt.Figure()
+    axis = fig.add_subplot(1, 1, 1)
+    axis.plot(iterations, meanPing)
+    axis.set_xlabel("Requests")
+    axis.set_ylabel("Mean Ping (ms)")
+    title = "Server Pingtest\n(Successful: " + str(pingResults["Success"]) + " Failed: " + str(pingResults["Failed"]) + ")"
+    axis.set_title(title)
+    bytesOutput = io.BytesIO()
+    FigureCanvasAgg(fig).print_png(bytesOutput)
+    return Response(bytesOutput.getvalue(), mimetype='image/png')
+
+# Destination of the ping measuring tool
+@app.route('/monitor/ping-dest')
+def ping_test_destination():
+    return "OK"
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

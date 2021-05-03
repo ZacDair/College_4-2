@@ -6,7 +6,6 @@ import logging
 import reddit_simulation_pb2_grpc
 import reddit_simulation_pb2
 
-
 # REPLACE THIS WITH A PID ?
 CLIENT_ID = 1
 
@@ -45,7 +44,7 @@ def server_streaming_method(stub):
 # Main function for creating the stub and connecting to the server
 def main():
     
-    with grpc.insecure_channel('server:50051') as channel:
+    with grpc.insecure_channel('a02-server:50051') as channel:
         stub = reddit_simulation_pb2_grpc.DataStreamingServiceStub(channel)
         server_streaming_method(stub)
 
