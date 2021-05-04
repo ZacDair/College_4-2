@@ -8,21 +8,10 @@ import logging
 
 import random
 import time
+import os
 
+DATASET_PATH = os.getenv("DATASET_PATH")
 
-# Function to read and parse the dataset entries
-def getData(datasetPath):
-    data = []
-    with open(datasetPath, 'r', errors='ignore') as file:
-        rows = file.readlines()
-        rows.pop(0)
-        for row in rows:
-            row = row.strip()
-            row = row.split(",")
-            if len(row) == 12:
-                data.append(row)
-    file.close()
-    return data
 
 # Function to read and parse the dataset entries
 def getRows(datasetPath):
@@ -46,7 +35,7 @@ class Server(reddit_simulation_pb2_grpc.DataStreamingServiceServicer):
         def send_dataPosts():
             
             # Retrieve the whole dataset
-            data = getRows("datasource/r_dataisbeautiful_posts.xls")
+            data = getRows(DATASET_PATH)
             
             # Define a number of posts to send every run and store a running count
             numToSend = random.randint(1, 5)
@@ -55,14 +44,36 @@ class Server(reddit_simulation_pb2_grpc.DataStreamingServiceServicer):
             # Loop through every entry of the dataset parse and convert to a list, and send each to the client
             for post in data:
                 post = post.strip()
+                post = post.encode('ascii', 'ignore').decode('ascii')
                 post = post.split(",")
+
+                # Change data format of Youtube data to fit old Reddit format
+                dataID = "RD-"
+                if DATASET_PATH == "datasource/GBvideos.csv":
+                    dataID = "YT-"
+                    if len(post) == 16:
+                        # Remove and re-arrange data to match the reddit format
+                        post.pop(1)
+                        post.pop(3)
+                        post.pop(3)
+                        post.pop(3)
+                        post.pop(4)
+                        post.pop(4)
+                        post.insert(2, 1)
+                        post.insert(4, "no-flair")
+                        post.insert(5, "")
+                        post.insert(7, "")
+                        post.insert(8, time.time())
+                        post.insert(9, post.pop(10))
+                        post = post[0:12]
+            
                 if len(post) == 12:
                     postCount += 1
                     print("Sending Post:", str(post[0]))
 
                     # Create the DatasourcePost object and send it
                     response = reddit_simulation_pb2.DatasourcePost(
-                        post_id = post[0],
+                        post_id = dataID + post[0],
                         title = post[1],
                         score = int(post[2]),
                         author = post[3],

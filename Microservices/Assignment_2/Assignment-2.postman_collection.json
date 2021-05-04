@@ -1,0 +1,114 @@
+{
+	"info": {
+		"_postman_id": "34d5a64a-ebb8-44c3-a18e-e8bf2ebea7ba",
+		"name": "Assignment-2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "127.0.0.1:5000/api/tests/pods",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test - Kubernetes Pod Count\", function (){",
+							"    // Check the status code",
+							"    pm.response.to.have.status(200);",
+							"    // Check the request suceeded",
+							"    pm.response.to.be.success;",
+							"    // Store the returned message",
+							"    const respMessage = pm.response.json();",
+							"    // Store the number of expected pods and retrieve the actual number",
+							"    const expectedPodCount = 8;",
+							"    const podNames = Object.keys(respMessage.message);",
+							"    pm.expect(podNames.length).to.eql(expectedPodCount)",
+							"});",
+							"",
+							"",
+							"pm.test(\"Test - Kubernetes Pods Status\", function (){",
+							"    // Check the status code",
+							"    pm.response.to.have.status(200);",
+							"    // Check the request suceeded",
+							"    pm.response.to.be.success;",
+							"    // Store the returned message",
+							"    const respMessage = pm.response.json();",
+							"    // Store the number of expected pods and retrieve the actual number",
+							"    const expectedPodCount = 7;",
+							"    for (var index in respMessage.message.Details){",
+							"        let pod = respMessage.message.Details[index];",
+							"        pm.expect(pod.Status).to.eql(\"Running\")",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:5000/api/tests/pods",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"tests",
+						"pods"
+					]
+				},
+				"description": "Request to the testing API, and functional tests to validate the status of the pods"
+			},
+			"response": []
+		},
+		{
+			"name": "127.0.0.1:5000/api/tests/redis",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test - Redis Availability\", function (){",
+							"    // Check the status code",
+							"    pm.response.to.have.status(200);",
+							"    // Check the request suceeded",
+							"    pm.response.to.be.success;",
+							"    // Store the returned message",
+							"    const respMessage = pm.response.json();",
+							"    pm.expect(respMessage.message).to.eql(\"Redis Datastore Available on port 6379\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:5000/api/tests/redis",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"tests",
+						"redis"
+					]
+				},
+				"description": "Request to the testing API, and functional tests to validate the status of the redis datastore"
+			},
+			"response": []
+		}
+	]
+}
