@@ -73,7 +73,7 @@ class Server(reddit_simulation_pb2_grpc.DataStreamingServiceServicer):
 
                     # Create the DatasourcePost object and send it
                     response = reddit_simulation_pb2.DatasourcePost(
-                        post_id = post[0],
+                        post_id = dataID + post[0],
                         title = post[1],
                         score = int(post[2]),
                         author = post[3],

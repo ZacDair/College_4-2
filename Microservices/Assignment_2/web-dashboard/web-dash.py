@@ -29,7 +29,6 @@ def start_timer():
 def stop_timer(response):
     resp_time = (time.time() - request.start_time)*1000
     metrics.metric("ping").notify(resp_time)
-    print(resp_time)
     return response
 
 
@@ -195,7 +194,7 @@ def monitor_pingtest():
     # Loop n times, performing a request and storing the result and ping
     i = 1
     while i <= 5:
-        r = req.get("http://localhost:5000/monitor/ping-dest")
+        r = req.get("http://localhost:5000/main")
         if r.status_code == 200:
             pingResults["Success"] += 1
         else:
