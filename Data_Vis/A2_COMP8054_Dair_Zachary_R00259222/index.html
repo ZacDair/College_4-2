@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<title>Zac Dair - Calendar Heatmap</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.5.0/d3.min.js " type="text/JavaScript"></script>
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}
+</style>
+<body class="w3-light-grey w3-content" style="max-width:1600px">
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main">
+
+  <!-- Header -->
+  <header id="portfolio">
+    <a href="#"><img src="" style="width:65px;" class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity"></a>
+    <span class="w3-button w3-hide-large w3-xxlarge w3-hover-text-grey" onclick="w3_open()"><i class="fa fa-bars"></i></span>
+    <div class="w3-container">
+      <h2><b>Video Game Release Heatmap</b></h2>
+      <h4><b>Assignment 2 - Data Visulization</b></h4>
+      <div class="w3-section w3-bottombar w3-padding-16" id="genreControl">
+        <span class="w3-margin-right">Genre Selection:</span>
+        <button class="w3-button w3-black" onclick="toggleGenreSelection('all')">All</button>
+        <button class="w3-button w3-white" onclick="toggleGenreSelection('Action')"><i class="fa fa-bomb w3-margin-right"></i>Action</button>
+        <button class="w3-button w3-white w3-hide-small" onclick="toggleGenreSelection('Adventure')"><i class="fa fa-tree w3-margin-right"></i>Adventure</button>
+        <button class="w3-button w3-white w3-hide-small" onclick="toggleGenreSelection('Massively Multiplayer')"><i class="fa fa-users w3-margin-right"></i>MMO</button>
+        <button class="w3-button w3-white w3-hide-small" onclick="toggleGenreSelection('Strategy')"><i class="fa fa-globe w3-margin-right"></i>Strategy</button>
+        <button class="w3-button w3-white w3-hide-small" onclick="toggleGenreSelection('RPG')"><i class="fa fa-magic w3-margin-right"></i>RPG</button>
+        <button class="w3-button w3-white w3-hide-small" onclick="toggleGenreSelection('Free to Play')"><i class="fa fa-usd w3-margin-right"></i>F2P</button>
+        <button class="w3-button w3-white w3-hide-small" onclick="toggleGenreSelection('Indie')"><i class="fa fa-wpexplorer w3-margin-right"></i>Indie</button>
+        <button class="w3-button w3-white w3-hide-small" onclick="toggleGenreSelection('Racing')"><i class="fa fa-car w3-margin-right"></i>Racing</button>
+        <button class="w3-button w3-white w3-hide-small" onclick="toggleGenreSelection('Simulation')"><i class="fa fa-microchip w3-margin-right"></i>Sim</button>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Current Year Overview -->
+  <div class="w3-row-padding">
+    <h3 class="w3-center w3-padding-32">All Releases for 2018</h3>
+    <div id="currentYear" class="w3-container w3-margin-bottom w3-center"></div>
+  </div>
+
+  <!-- Interactive Comparison -->
+  <div class="w3-row-padding">
+    <h3 id="comparisonGenreLabel" class="w3-center w3-padding-32">Yearly Comparison: All Games</h3>
+    <div id="calendar-heatmap" class="w3-container w3-margin-bottom w3-center"></div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="w3-center w3-padding-32 dropdown">
+    <button class="dropbtn" onclick="toggleDropdown()" >View another year</button>
+    <div id="myDropdown" class="dropdown-content">
+      <a onclick="addYearToView(2020, GENRE_SELECTION, false)">2020</a>
+      <a onclick="addYearToView(2019, GENRE_SELECTION, false)">2019</a>
+      <a onclick="addYearToView(2018, GENRE_SELECTION, false)">2018</a>
+      <a onclick="addYearToView(2017, GENRE_SELECTION, false)">2017</a>
+      <a onclick="addYearToView(2016, GENRE_SELECTION, false)">2016</a>
+      <a onclick="addYearToView(2015, GENRE_SELECTION, false)">2015</a>
+      <a onclick="addYearToView(2014, GENRE_SELECTION, false)">2014</a>
+      <a onclick="addYearToView(2013, GENRE_SELECTION, false)">2013</a>
+      <a onclick="addYearToView(2012, GENRE_SELECTION, false)">2012</a>
+      <a onclick="addYearToView(2011, GENRE_SELECTION, false)">2011</a>
+      <a onclick="addYearToView(2010, GENRE_SELECTION, false)">2010</a>
+      <a onclick="addYearToView(2009, GENRE_SELECTION, false)">2009</a>
+      <a onclick="addYearToView(2008, GENRE_SELECTION, false)">2008</a>
+      <a onclick="addYearToView(2007, GENRE_SELECTION, false)">2007</a>
+    </div>
+    <h6 id="colorMode">Color Mode: Standardized</h6><button onclick="toggleColorMode()">Toggle</button>
+  </div>
+
+
+
+  <!-- Footer -->
+  <div class="w3-black w3-center w3-padding-24">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></div>
+
+<!-- End page content -->
+</div>
+
+<script>
+function parseDate(dateString){
+	if (dateString != null){
+		dateList = dateString.split(" ");
+		var date = Date.parse(dateString);
+		if(!isNaN(date)){
+			var date = new Date(date);
+			res = date.getFullYear() + "-" + ('0' + (date.getMonth() + 1)).slice(-2) + "-" + ('0' + date.getUTCDate()).slice(-2);
+			return res;
+		}
+		return false;
+	}
+}
+
+function getRelevantData(data, year, genre){
+	let cleanedData = [];
+	let dateDict = [];
+	let res = [];
+	for(datapoint in data){
+		var date = parseDate(data[datapoint]["release_date"]);
+		var dateObj = new Date(date);
+		if (date && (dateObj.getFullYear() == year)){
+			if (data[datapoint]["genre"].includes(genre) || genre == "all"){
+				data[datapoint]["release_date"] = date;
+				cleanedData.push(data[datapoint]);
+				if (date in dateDict){
+					dateDict[date] = dateDict[date]+1;
+				}
+				else{
+					dateDict[date] = 1;
+				}
+			}
+		}
+	}
+	return cleanedData;
+}
+
+
+function convertValToLength(val){
+		if (val == null){
+			val = 0;
+		}
+		else{
+			val = val.length;
+		}
+		return val
+}
+
+
+function createHeatmap(cleanedData, divName){
+	let data = cleanedData;
+	let result = d3.group(data, d => d.release_date);
+	//let result = new Map(dateDict.map(value => [value["date"], value["count"]]));
+	var startDate = d3.min(data, function(d) { return d.release_date; });
+	var stopDate = d3.max(data, function(d) { return d.release_date; });
+
+	var startYear = new Date(startDate).getFullYear();
+	var sY = startYear + "-01-01";
+	var eY = startYear + "-12-31";
+
+	const width = 960, height =150, cellSize = 17;
+
+	var xScale = d3.scaleTime()
+      .domain([new Date(sY), new Date(eY)])
+      .range([17*3, width-17]);
+
+	var xAxis = d3.axisBottom(xScale)
+      .tickFormat(d3.timeFormat("%b"));
+
+	let color = d3.scaleQuantize();
+	let colorRange = ["#ffffff","#fffecb","#fffec9","#fffdc8","#fffdc6","#fffcc5","#fffcc4","#fffbc2","#fffac1","#fffac0","#fff9be","#fff9bd","#fff8bb","#fff8ba","#fff7b9","#fff6b7","#fff6b6","#fff5b5","#fff5b3","#fff4b2","#fff4b0","#fff3af","#fff2ae","#fff2ac","#fff1ab","#fff1aa","#fff0a8","#fff0a7","#ffefa6","#ffeea4","#ffeea3","#ffeda2","#ffeda0","#ffec9f","#ffeb9d","#ffeb9c","#ffea9b","#ffea99","#ffe998","#ffe897","#ffe895","#ffe794","#ffe693","#ffe691","#ffe590","#ffe48f","#ffe48d","#ffe38c","#fee28b","#fee289","#fee188","#fee087","#fee085","#fedf84","#fede83","#fedd82","#fedc80","#fedc7f","#fedb7e","#feda7c","#fed97b","#fed87a","#fed778","#fed777","#fed676","#fed574","#fed473","#fed372","#fed270","#fed16f","#fed06e","#fecf6c","#fece6b","#fecd6a","#fecb69","#feca67","#fec966","#fec865","#fec764","#fec662","#fec561","#fec460","#fec25f","#fec15e","#fec05c","#febf5b","#febe5a","#febd59","#febb58","#feba57","#feb956","#feb855","#feb754","#feb553","#feb452","#feb351","#feb250","#feb14f","#feb04e","#feae4d","#fead4d","#feac4c","#feab4b","#feaa4a","#fea84a","#fea749","#fea648","#fea547","#fea347","#fea246","#fea145","#fda045","#fd9e44","#fd9d44","#fd9c43","#fd9b42","#fd9942","#fd9841","#fd9741","#fd9540","#fd9440","#fd923f","#fd913f","#fd8f3e","#fd8e3e","#fd8d3d","#fd8b3c","#fd893c","#fd883b","#fd863b","#fd853a","#fd833a","#fd8139","#fd8039","#fd7e38","#fd7c38","#fd7b37","#fd7937","#fd7736","#fc7535","#fc7335","#fc7234","#fc7034","#fc6e33","#fc6c33","#fc6a32","#fc6832","#fb6731","#fb6531","#fb6330","#fb6130","#fb5f2f","#fa5d2e","#fa5c2e","#fa5a2d","#fa582d","#f9562c","#f9542c","#f9522b","#f8512b","#f84f2a","#f74d2a","#f74b29","#f64929","#f64828","#f54628","#f54427","#f44227","#f44127","#f33f26","#f23d26","#f23c25","#f13a25","#f03824","#f03724","#ef3524","#ee3423","#ed3223","#ed3123","#ec2f22","#eb2e22","#ea2c22","#e92b22","#e92921","#e82821","#e72621","#e62521","#e52420","#e42220","#e32120","#e22020","#e11f20","#e01d20","#df1c20","#de1b20","#dd1a20","#dc1920","#db1820","#da1720","#d91620","#d81520","#d71420","#d51320","#d41221","#d31121","#d21021","#d10f21","#cf0e21","#ce0d21","#cd0d22","#cc0c22","#ca0b22","#c90a22","#c80a22","#c60923","#c50823","#c40823","#c20723","#c10723","#bf0624","#be0624","#bc0524","#bb0524","#b90424","#b80424","#b60425","#b50325","#b30325","#b10325","#b00225","#ae0225","#ac0225","#ab0225","#a90125","#a70126","#a50126","#a40126","#a20126","#a00126","#9e0126","#9c0026","#9a0026","#990026","#970026","#950026","#930026","#910026","#8f0026","#8d0026","#8b0026","#8a0026","#880026","#860026","#840026","#820026","#800026"];
+
+	if (COLORSCALE === "Unique") {
+      color.domain([0, d3.max(result, function(d) { return convertValToLength(d[1])})])
+              .range(colorRange);
+		console.log(d3.max(result, function(d) { return convertValToLength(d[1])}));
+    }
+	else{
+      color = d3.scaleQuantize().domain([0, 50])
+              .range(colorRange);
+    }
+
+	const svg = d3.select(divName).append("div").attr("id", "comparison"+COMPARISON_COUNT)
+		.selectAll("svg")
+		.data(d3.range(parseInt(startDate), parseInt(stopDate) + 1))
+		.enter().append("svg")
+		.attr("width", width)
+		.attr("height", height)
+		.append("g")
+		.attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 8 - 1) + ")");
+
+	// Cells
+	svg.append("g")
+		.attr("fill", "none")
+		.attr("stroke", "#000")
+		.attr("stroke-width", "0.1px")
+		.selectAll("rect")
+		.data(d => d3.timeDays(new Date(d, 0, 1), new Date(d + 1, 0, 1)))
+		.enter().append("rect")
+		.attr("width", cellSize)
+		.attr("height", cellSize)
+		.attr("x", d => d3.timeWeek.count(d3.timeYear(d), d) * cellSize)
+		.attr("y", d => d.getDay() * cellSize)
+		.datum(d3.timeFormat("%Y-%m-%d"))
+		.attr('fill', d => color(convertValToLength(result.get(d))))
+		.on("mouseover", function () {
+			d3.select(this).attr('stroke-width', "1px");
+		})
+		.on("mouseout", function () {
+			d3.select(this).attr('stroke-width', "0.1px");
+		})
+		.append("title")
+		.text(d => d + ": " + convertValToLength(result.get(d)) + " Games");
+
+	// Year Labels
+	svg.append("text")
+		.attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
+		.attr("font-family", "sans-serif")
+		.attr("font-size", "1em")
+		.attr("text-anchor", "middle")
+		.text(d => d);
+
+	// Month Outline
+	svg.append("g")
+		.attr("fill", "none")
+		.attr("stroke", "#000")
+		.attr("stroke-width", "1.5px")
+		.selectAll("path")
+		.data(d => d3.timeMonths(new Date(d, 0, 1), new Date(d + 1, 0, 1)))
+		.enter().append("path")
+		.attr("d", function (d) {
+			const t1 = new Date(d.getFullYear(), d.getMonth() + 1, 0),
+				d0 = d.getDay(), w0 = d3.timeWeek.count(d3.timeYear(d), d),
+				d1 = t1.getDay(), w1 = d3.timeWeek.count(d3.timeYear(t1), t1);
+			return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
+				+ "H" + w0 * cellSize + "V" + 7 * cellSize
+				+ "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
+				+ "H" + (w1 + 1) * cellSize + "V" + 0
+				+ "H" + (w0 + 1) * cellSize + "Z";
+		});
+
+	svg.append("g")
+	  .attr("transform", "translate(-17, 118)")
+      .call(xAxis);
+	 
+}
+
+function readDataFromFile(datasetPath){
+	// Read in the csv file
+	d3.csv(datasetPath).then(function(data){
+		GLOBAL_DATA = data;
+		console.log(GLOBAL_DATA);
+		createHeatmap(getRelevantData(data, 2018, "all"), "#currentYear");
+	}).catch(function(error){
+		// handle error
+		console.log(error);
+	});
+}
+
+function addYearToView(year, genre) {
+  COMPARISON_COUNT += 1;
+  YEARS_SELECTED.push(year);
+
+  createHeatmap(getRelevantData(GLOBAL_DATA, year, genre), "#calendar-heatmap");
+  let elem = document.getElementById("comparison" + COMPARISON_COUNT);
+  COMPARISON_ELEMS.push("comparison" + COMPARISON_COUNT);
+
+  let removeButton = document.createElement("Button");
+  removeButton.innerHTML = "X";
+  removeButton.onclick = function () {updateGlobals(elem); elem.remove();};
+  elem.appendChild(removeButton);
+}
+
+function toggleGenreSelection(genreString){
+  if (YEARS_SELECTED.length === 0){
+    alert("Please select years to view first")
+  }
+  else {
+	document.getElementById("comparisonGenreLabel").innerHTML = "Yearly Comparison: " + genreString + "Games";
+    GENRE_SELECTION = genreString;
+    let divsToRemove = COMPARISON_ELEMS;
+    let years = YEARS_SELECTED;
+    let i = 0;
+    for (index in divsToRemove) {
+      addYearToView(years[i], GENRE_SELECTION);
+      removeElementById(divsToRemove[index]);
+      i += 1;
+    }
+  }
+}
+
+function removeElementById(id) {
+  updateGlobals(document.getElementById(id));
+  document.getElementById(id).remove();
+}
+
+function updateGlobals(parentElement){
+  let index = COMPARISON_ELEMS.indexOf(parentElement.id);
+  COMPARISON_ELEMS.splice(index, 1);
+  YEARS_SELECTED.splice(index, 1);
+}
+
+function toggleColorMode(){
+  if (COLORSCALE === "Standardized"){
+    COLORSCALE = "Unique";
+  }
+  else{
+    COLORSCALE = "Standardized";
+  }
+  document.getElementById("colorMode").innerHTML = "Color Mode: " + COLORSCALE;
+}
+
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function toggleDropdown() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+};
+
+// Script to open and close sidebar
+function w3_open() {
+    document.getElementById("mySidebar").style.display = "block";
+    document.getElementById("myOverlay").style.display = "block";
+}
+
+function w3_close() {
+    document.getElementById("mySidebar").style.display = "none";
+    document.getElementById("myOverlay").style.display = "none";
+}
+
+// Load data and create visuals
+var GLOBAL_DATA;
+var COLORSCALE = "Standardized";
+var COMPARISON_COUNT = 0;
+var COMPARISON_ELEMS = [];
+var GENRE_SELECTION = "all";
+var YEARS_SELECTED = [];
+readDataFromFile("dataset/steam_games.csv");
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<title>COMP8054 W10 Lab</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.5.0/d3.min.js " type="text/JavaScript"></script>
+	
+    <style>
+    </style>
+  </head>
+  
+  
+  <body id="theBody">
+	
+	<h3>Hierarchical Visualisations</h3>
+	
+	<div id="div1">
+		<h4>Circle Packing</h4>
+		<script>
+			// Read in the csv file
+			d3.json("tweets.json", d3.autoType).then(function(data){
+			
+			console.log(data);
+			
+			nestedTweets = d3.group([data], d => d.user);
+
+			packableTweets = {id: "root", values: nestedTweets}
+			 
+			console.log(packableTweets);
+
+			 var depthScale = d3.scale.category10([0,1,2]);
+
+			 exposedData = incData;
+			 packChart = d3.layout.pack();
+			 packChart.size([500,500])
+			  .children(function(d) {return d.values})
+			  .value(function(d) {return d.retweets.length + d.favorites.length + 1});
+
+			 d3.select("#div1").append("svg")
+			  .append("g")
+			  .attr("transform", "translate(0,0)")
+			  .selectAll("circle")
+			  .data(packChart(packableTweets))
+			  .enter()
+			  .append("circle")
+			  .attr("r", function(d) {return d.r - (d.depth * 0)})
+			  .attr("cx", function(d) {return d.x})
+			  .attr("cy", function(d) {return d.y})
+			  .style("fill", function(d) {return depthScale(d.depth)})
+			  .style("stroke", "black")
+			  .style("stroke", "2px")
+			
+			
+			}).catch(function(error){
+				// handle error
+				console.log(error);				
+			});
+		</script>
+	</div>
+	
+  </body>
+  
+</html>
