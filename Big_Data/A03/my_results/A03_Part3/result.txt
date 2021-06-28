@@ -1,0 +1,18 @@
+
+
+
+
+Row(birth_year=1990, start_hour='18', num_trips=1765)
+Row(birth_year=1991, start_hour='17', num_trips=1821)
+Row(birth_year=1992, start_hour='18', num_trips=1677)
+Row(birth_year=1993, start_hour='18', num_trips=1555)
+Row(birth_year=1994, start_hour='18', num_trips=1436)
+Row(birth_year=1995, start_hour='18', num_trips=1347)
+Row(birth_year=1996, start_hour='17', num_trips=547)
+Row(birth_year=1997, start_hour='18', num_trips=325)
+Row(birth_year=1998, start_hour='17', num_trips=222)
+Row(birth_year=1999, start_hour='16', num_trips=207)
+Row(birth_year=2000, start_hour='17', num_trips=107)
+Row(birth_year=2001, start_hour='17', num_trips=100)
+Row(birth_year=2002, start_hour='08', num_trips=70)
+Row(birth_year=2003, start_hour='08', num_trips=14)

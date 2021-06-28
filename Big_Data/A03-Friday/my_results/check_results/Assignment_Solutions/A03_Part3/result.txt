@@ -1,0 +1,5 @@
+
+
+
+
+Row(trip_id=285794, trip_duration=7192)
